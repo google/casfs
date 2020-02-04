@@ -1,0 +1,2 @@
+include versioneer.py
+include casfs/_version.py
