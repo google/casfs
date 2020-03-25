@@ -51,16 +51,16 @@ def persist(filesystem: fs.base.FS):
   print(list(f.folders()))
 
   # total number of
-  print(f"{f.count()} files in the hashfs.")
-  print(f"{f.size()} bytes stored in the hashfs.")
+  print("{} files in the hashfs.".format(f.count()))
+  print("{} bytes stored in the hashfs.".format(f.size()))
 
   f.delete(ak)
   f.delete(bk)
 
-  print(f"{f.count()} files in the hashfs AFTER delete.")
-  print(f"{f.size()} bytes stored in the hashfs AFTER delete.")
+  print("{} files in the hashfs AFTER delete.".format(f.count()))
+  print("{} bytes stored in the hashfs AFTER delete.".format(f.size()))
 
-  print(f"Does the deleted file exist? {f.exists(ak)}")
+  print("Does the deleted file exist? {}".format(f.exists(ak)))
   f.repair()
   filesystem.tree()
 
@@ -74,5 +74,5 @@ if __name__ == '__main__':
   persist(fs.open_fs('~/.modeldb', create=True))
 
   bucket = os.environ.get("BUCKET_NAME")
-  gcsfs = fs.open_fs(f"gs://{bucket}/cas?strict=False")
+  gcsfs = fs.open_fs("gs://{}/cas?strict=False".format(bucket))
   persist(gcsfs)

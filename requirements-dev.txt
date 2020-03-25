@@ -1,3 +1,7 @@
 # Required for development, not publication.
-nose
+hypothesis
+pre-commit
+pytest
+pytest-cov
 sphinx
+twine

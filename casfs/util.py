@@ -2,12 +2,12 @@
 
 import hashlib
 import io
+import logging
 import os
 from collections import namedtuple
 from typing import Any, List, Optional, Union
 
 import fs as pyfs
-from absl import logging
 from fs.base import FS
 
 

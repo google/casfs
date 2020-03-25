@@ -252,7 +252,8 @@ class CASFS(object):
       self.fs.makedirs(dir_path, permissions=perms, recreate=True)
 
     except pyfs.errors.DirectoryExpected:
-      assert self.fs.isdir(dir_path), f"expected {dir_path} to be a directory"
+      assert self.fs.isdir(dir_path), "expected {} to be a directory".format(
+          dir_path)
 
   def _fs_path(self, k: Union[str, u.HashAddress]) -> Optional[str]:
     """Attempt to determine the real path of a file id or path through successive

@@ -24,6 +24,7 @@ setup(
     cmdclass=with_versioneer(lambda v: v.get_cmdclass(), {}),
     description="Content-Addressable filesystem over Pyfilesystem2.",
     long_description=readme,
+    python_requires='>=3.5.3',
     author='Blueshift Team',
     author_email='samritchie@google.com',
     url='https://team.git.corp.google.com/blueshift/casfs',
