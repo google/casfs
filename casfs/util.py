@@ -62,14 +62,19 @@ def load_fs(root: Union[FS, str]) -> FS:
 
 
 def syspath(fs: FS, path: str) -> Optional[str]:
-  """"""
+  """Returns the true system path for the supplied path on the supplied
+  filesystem, or none if that's not possible to fulfill (MemoryFS
+  implementations, for example).
+
+  """
   try:
     return fs.getsyspath(path)
   except pyfs.errors.NoSysPath:
     logging.error("Can't get a path.")
+    return None
 
 
-# TODO add the hash here
+# TODO add the hashing method here
 # TODO add a to and from string method
 class HashAddress(namedtuple("HashAddress", ["id", "relpath", "is_duplicate"])):
   """File address containing file's path on disk and it's content hash ID.
@@ -91,7 +96,8 @@ class HashAddress(namedtuple("HashAddress", ["id", "relpath", "is_duplicate"])):
       obj.relpath == self.relpath
 
 
-# TODO examine, allow this to handle wrapping another stream in addition to itself.
+# TODO examine, allow this to handle wrapping another stream in addition to
+# itself.
 class Stream(object):
   """Common interface for file-like objects.
 

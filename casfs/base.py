@@ -1,6 +1,6 @@
 """Module for CASFS class.
 
-Potential next steps...
+Potential next steps:
 
 TODO - store the actual FULL hash at the end of each.
 
@@ -14,7 +14,7 @@ import hashlib
 import io
 import os
 from contextlib import closing
-from typing import Iterable, Optional, Tuple, Union
+from typing import Iterable, Optional, Text, Tuple, Union
 
 import fs as pyfs
 from fs.permissions import Permissions
@@ -30,24 +30,26 @@ class CASFS(object):
   https://github.com/PyFilesystem/pyfilesystem2.
 
     Attributes:
-        root: Directory path used as root of storage space.
-        depth (int, optional): Depth of subfolders to create when saving a
-            file.
-        width (int, optional): Width of each subfolder to create when saving a
-            file.
-        algorithm (str): Hash algorithm to use when computing file hash.
-            Algorithm should be available in ``hashlib`` module, ie, a member
-            of `hashlib.algorithms_available`. Defaults to ``'sha256'``.
-        dmode (int, optional): Directory mode permission to set for
-            subdirectories. Defaults to ``0o755`` which allows owner/group to
-            read/write and everyone else to read and everyone to execute.
+        root: Either an instance of pyfs.base.FS, or a URI string parseable by
+            pyfilesystem.
+        depth: Depth of subfolders to create when saving a file. Defaults to 2,
+            which means that actual hashes will be nested two items deep.
+        width: Width of each subfolder to create when saving a file. This means
+            that blocks of `width` characters of the hash will be used to
+            bucket content into each successive folder.
+        algorithm: Hash algorithm to use when computing file hash. Algorithm
+            should be available in `hashlib` module, ie, a member of
+            `hashlib.algorithms_available`. Defaults to `'sha256'`.
+        dmode: Directory mode permission to set for subdirectories. Defaults to
+            `0o755` which allows owner/group to read/write and everyone else to
+            read and everyone to execute.
 
   """
 
   def __init__(self,
                root: Union[pyfs.base.FS, str],
-               depth: Optional[int] = 4,
-               width: Optional[int] = 1,
+               depth: Optional[int] = 2,
+               width: Optional[int] = 2,
                algorithm: hashlib.algorithms_available = "sha256",
                dmode: Optional[int] = 0o755):
 
@@ -82,7 +84,7 @@ class CASFS(object):
       k: Address ID or path of file.
 
     Returns:
-      File's hash address.
+      File's hash address or None.
 
     """
     path = self._fs_path(k)
@@ -92,15 +94,14 @@ class CASFS(object):
 
     return u.HashAddress(self._unshard(path), path)
 
-  def open(self, k: Key, mode: str = "rb") -> io.IOBase:
+  def open(self, k: Key) -> io.IOBase:
     """Return open IOBase object from given id or path.
 
         Args:
             k: Address ID or path of file.
-            mode (str, optional): Mode to open file in. Defaults to ``'rb'``.
 
         Returns:
-            Buffer: An ``io`` buffer dependent on the `mode`.
+            Buffer: A read-only `io` buffer into the underlying filesystem.
 
         Raises:
             IOError: If file doesn't exist.
@@ -110,18 +111,18 @@ class CASFS(object):
     if path is None:
       raise IOError("Could not locate file: {0}".format(k))
 
-    return self.fs.open(path, mode)
+    return self.fs.open(path, mode='rb')
 
   def delete(self, k: Key) -> None:
     """Delete file using id or path. Remove any empty directories after
         deleting. No exception is raised if file doesn't exist.
 
         Args:
-            file (str): Address ID or path of file.
+            k: Key of the file to delete..
         """
     path = self._fs_path(k)
     if path is None:
-      return
+      return None
 
     try:
       self.fs.remove(path)
@@ -129,15 +130,16 @@ class CASFS(object):
       # Attempting to delete a directory.
       pass
     else:
+      print("REMOVING", pyfs.path.dirname(path))
       self._remove_empty(pyfs.path.dirname(path))
 
-  def files(self) -> Iterable[str]:
+  def files(self) -> Iterable[Text]:
     """Return generator that yields all files in the :attr:`fs`.
 
     """
-    return self.fs.walk.files()
+    return (pyfs.path.relpath(p) for p in self.fs.walk.files())
 
-  def folders(self) -> Iterable[str]:
+  def folders(self) -> Iterable[Text]:
     """Return generator that yields all directories in the :attr:`fs` that contain
         files.
 
@@ -149,7 +151,7 @@ class CASFS(object):
   def count(self) -> int:
     """Return count of the number of files in the backing :attr:`fs`.
         """
-    return sum(1 for _, info in self.fs.walk.info() if not info.is_file)
+    return sum(1 for _, info in self.fs.walk.info() if info.is_file)
 
   def size(self) -> int:
     """Return the total size in bytes of all files in the :attr:`root`
@@ -157,27 +159,28 @@ class CASFS(object):
         """
     return sum(info.size
                for _, info in self.fs.walk.info(namespaces=['details'])
-               if not info.is_dir)
+               if info.is_file)
 
   def exists(self, k: Key) -> bool:
     """Check whether a given file id or path exists on disk."""
     return bool(self._fs_path(k))
 
-  def repair(self) -> Iterable[str]:
-    """Repair any file locations whose content address doesn't match it's
-        file path.
-        """
+  def repair(self) -> Iterable[Text]:
+    """Repair any file locations whose content address doesn't match its file path.
+    Returns a sequence of repaired files.
+
+    """
     repaired = []
     corrupted = self._corrupted()
 
     for path, address in corrupted:
-      if self.fs.isfile(path):
+      if self.fs.isfile(address.relpath):
         # File already exists so just delete corrupted path.
         self.fs.remove(path)
 
       else:
         # File doesn't exist, so move it.
-        self._makedirs(pyfs.path.dirname(path))
+        self._makedirs(pyfs.path.dirname(address.relpath))
         self.fs.move(path, address.relpath)
 
       repaired.append((path, address))
@@ -208,7 +211,7 @@ class CASFS(object):
     """Compute hash of file using :attr:`algorithm`."""
     return u.computehash(stream, self.algorithm)
 
-  def _copy(self, stream: u.Stream, hashid: str):
+  def _copy(self, stream: u.Stream, hashid: str) -> Tuple[Text, bool]:
     """Copy the contents of `stream` onto disk.
 
         Returns a pair of
@@ -295,7 +298,7 @@ class CASFS(object):
 
     return pyfs.path.splitext(path)[0].replace(os.sep, "")
 
-  def _corrupted(self) -> Iterable[Tuple[str, u.HashAddress]]:
+  def _corrupted(self) -> Iterable[Tuple[Text, u.HashAddress]]:
     """Return generator that yields corrupted files as ``(path, address)``, where
     ``path`` is the path of the corrupted file and ``address`` is the
     :class:`HashAddress` of the expected location.

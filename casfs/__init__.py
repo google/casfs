@@ -1,7 +1,7 @@
 """Docs on CASFS.
 """
 
-from casfs.casfs import CASFS
+from casfs.base import CASFS
 from casfs.util import HashAddress
 
 from ._version import get_versions
