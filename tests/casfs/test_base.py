@@ -1,3 +1,18 @@
+#!/usr/bin/python
+#
+# Copyright 2020 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 """Basic namespace; examples and tests.
 
 
@@ -5,19 +20,16 @@ TODO - handle strings for 'put'
 
 """
 
-import os
 from contextlib import closing
 from io import StringIO
 
-import fs
+import casfs.util as u
+from casfs import CASFS
 from fs.copy import copy_fs
 from fs.memoryfs import MemoryFS
 from fs.opener.errors import UnsupportedProtocol
-from fs.tempfs import TempFS
 
-import casfs.util as u
 import pytest
-from casfs import CASFS
 
 
 @pytest.fixture
@@ -222,12 +234,6 @@ def test_syspath(memcas):
   # this trick does not work on a MemoryFS based CAS. It returns None to show
   # us that this isn't a thing.
   assert u.syspath(memcas.fs, ak.relpath) == None
-
-
-class Fake(object):
-
-  def read():
-    pass
 
 
 def test_stream(mem):
