@@ -66,13 +66,11 @@ pre-commit: $(ENV_ACT) pre-commit run --all-files
 push:
 	git push origin master
 	git push --tags
-	git push $(SCR_REPO) master
-	git push $(SCR_REPO) --tags
 
 .PHONY: release-egg
 release:
 	$(ENV_ACT) python setup.py sdist bdist_wheel
-	$(ENV_ACT) twine upload -r pypi-local dist/*
+	$(ENV_ACT) twine upload -r pypi dist/*
 	rm -rf dist *.egg* build
 
 .PHONY: release

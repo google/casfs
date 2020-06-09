@@ -1,5 +1,9 @@
 # CASFS
 
+[![Build status](https://img.shields.io/travis/google/casfs/master.svg?maxAge=3600)](http://travis-ci.org/google/casfs)
+[![Codecov branch](https://img.shields.io/codecov/c/github/google/casfs/master.svg?maxAge=3600)](https://codecov.io/github/google/casfs)
+[![Latest version](https://img.shields.io/pypi/v/casfs?maxAge=3600)](https://pypi.org/project/casfs)
+
 CASFS is a content-addressable filestore library, built on
 [pyfilesystem2](https://github.com/PyFilesystem/pyfilesystem2). CASFS was
 inspired by [hashfs](https://github.com/dgilland/hashfs).

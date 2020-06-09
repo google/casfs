@@ -15,9 +15,6 @@
 # limitations under the License.
 from setuptools import setup, find_packages
 
-with open('README.md') as f:
-  readme = f.read()
-
 
 def with_versioneer(f, default=None):
   """Attempts to execute the supplied single-arg function by passing it
@@ -31,6 +28,14 @@ versioneer if available; else, returns the default.
     return default
 
 
+def readme():
+  try:
+    with open('README.md') as f:
+      return f.read()
+  except Exception:
+    return None
+
+
 REQUIRED_PACKAGES = ["fs", "fs-gcsfs"]
 
 setup(
@@ -38,7 +43,8 @@ setup(
     version=with_versioneer(lambda v: v.get_version()),
     cmdclass=with_versioneer(lambda v: v.get_cmdclass(), {}),
     description="Content-Addressable filesystem over Pyfilesystem2.",
-    long_description=readme,
+    long_description=readme(),
+    long_description_content_type="text/markdown",
     python_requires='>=3.5.3',
     author='Sam Ritchie',
     author_email='samritchie@google.com',
