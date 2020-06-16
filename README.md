@@ -23,8 +23,8 @@ Docs](https://casfs.readthedocs.io/en/latest).
 ## Disclaimer
 
 This is a research project, not an official Google product. Expect bugs and
-sharp edges. Please help by trying out Caliban, [reporting
-bugs](https://github.com/google/caliban/issues), and letting us know what you
+sharp edges. Please help by trying out CASFS, [reporting
+bugs](https://github.com/google/casfs/issues), and letting us know what you
 think!
 
 ## Citing CASFS

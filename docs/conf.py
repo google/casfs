@@ -39,7 +39,10 @@ extensions = [
     'sphinx.ext.viewcode',
 ]
 
-intersphinx_mapping = {'python': ('https://docs.python.org/3/', None)}
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3/', None),
+    'fs': ('https://pyfilesystem.readthedocs.io/en/latest/', None)
+}
 
 source_suffix = {'.rst': 'restructuredtext', '.txt': 'restructuredtext'}
 
