@@ -1,5 +1,8 @@
 # How to Contribute
 
+So you want to add some code to CASFS. Excellent! This page details ways that
+you can contribute.
+
 ## Contributor License Agreement
 
 Contributions to this project must be accompanied by a Contributor License
