@@ -1,6 +1,6 @@
 # CASFS
 
-[![Build status](https://img.shields.io/travis/google/casfs/master.svg?maxAge=3600)](http://travis-ci.org/google/casfs)
+[![Build status](https://img.shields.io/github/workflow/status/google/casfs/workflow/master.svg?maxAge=3600)](https://github.com/google/casfs/actions)
 [![Codecov branch](https://img.shields.io/codecov/c/github/google/casfs/master.svg?maxAge=3600)](https://codecov.io/github/google/casfs)
 [![readthedocs](https://img.shields.io/readthedocs/casfs?maxAge=3600)](https://casfs.readthedocs.io/en/latest/?badge=latest)
 [![Latest version](https://img.shields.io/pypi/v/casfs?maxAge=3600)](https://pypi.org/project/casfs)
