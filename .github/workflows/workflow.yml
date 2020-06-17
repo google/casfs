@@ -37,4 +37,4 @@ jobs:
       run: |
         pytest --doctest-modules -v -s \
         --hypothesis-profile dev \
-        caliban tests
+        casfs tests

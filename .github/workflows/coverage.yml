@@ -39,8 +39,8 @@ jobs:
         --hypothesis-profile dev \
         --cov-config setup.cfg \
         --cov-report=xml \
-        --cov caliban \
-        caliban tests
+        --cov casfs \
+        casfs tests
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
       with:
